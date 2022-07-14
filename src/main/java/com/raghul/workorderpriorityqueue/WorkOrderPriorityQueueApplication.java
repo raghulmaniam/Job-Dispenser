@@ -8,6 +8,8 @@ public class WorkOrderPriorityQueueApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WorkOrderPriorityQueueApplication.class, args);
+		
+		
 	}
 
 }

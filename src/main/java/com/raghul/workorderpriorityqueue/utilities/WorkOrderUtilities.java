@@ -10,9 +10,7 @@ public class WorkOrderUtilities {
 
 	public static long computeRank(WorkOrderType workOrderType, Date requestDate) {
 
-		long diff = new Date().getTime() - requestDate.getTime();
-
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(diff);
+		long seconds = computeTimeDiffSec(new Date().getTime(), requestDate.getTime());
 
 		switch (workOrderType) {
 		case NORMAL: {
@@ -31,6 +29,11 @@ public class WorkOrderUtilities {
 			return Long.MIN_VALUE;
 		}
 		}
+	}
+
+	public static long computeTimeDiffSec(long time1, long time2) {
+
+		return TimeUnit.MILLISECONDS.toSeconds(time1 - time2);
 	}
 
 	public static WorkOrderType computeWorkOrderType(int requestorId) {

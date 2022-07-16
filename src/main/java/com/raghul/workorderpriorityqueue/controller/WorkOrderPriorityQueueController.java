@@ -24,7 +24,7 @@ public class WorkOrderPriorityQueueController {
 
 	private final WorkOrderService workOrderService;
 	long rank = 0;
-	WorkOrderType workOrderType;
+	
 
 	@Autowired
 	public WorkOrderPriorityQueueController(WorkOrderService workOrderService) {
@@ -40,13 +40,12 @@ public class WorkOrderPriorityQueueController {
 
 	}
 
-	@PostMapping
+	@PostMapping("")
 	public String saveWorkOrder(@RequestBody WorkOrder workOrder) {
 
 		// check the id is already there
 		// check not null
-		workOrderType = WorkOrderUtilities.computeWorkOrderType(workOrder.getRequestorId());
-		workOrder.setWorkOrderType(workOrderType);
+		
 
 		// rank = computeRank(workOrderType, workOrder.getRequestDate());
 		// workOrder.setRank(rank);

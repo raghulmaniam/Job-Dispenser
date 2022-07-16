@@ -3,10 +3,8 @@ package com.raghul.workorderpriorityqueue.service.impl;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -28,6 +26,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	Queue<WorkOrder> managementQueue = new LinkedList<WorkOrder>();
 
 	List<Integer> workOrderIdList = new ArrayList<Integer>();
+	WorkOrderType workOrderType;
+	Date currDate;
+	int totalWaitingTime, totalWorkOrders, averageWaitingTime;
 
 	public int deQueueWorkOrder() {
 		WorkOrder topWorkOrder;
@@ -130,7 +131,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 		}
 
-		return String.format("The work order having Id: %s has been removed from the system", id);
+		return String.format("Success. The work order with Id: %s has been removed from the system", id);
 	}
 
 	private void removeItemFromQueue(Queue<WorkOrder> queue, int id) {
@@ -153,26 +154,75 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	public String getAverageWaitingTime() {
-		// TODO Auto-generated method stub
-		return null;
+
+		// re-setting values
+		currDate = new Date();
+		totalWaitingTime = 0;
+		totalWorkOrders = 0;
+		averageWaitingTime = 0;
+
+		for (WorkOrder order : managementQueue) {
+			totalWaitingTime += WorkOrderUtilities.computeTimeDiffSec(currDate.getTime(),
+					order.getRequestDate().getTime());
+		}
+		for (WorkOrder order : vipQueue) {
+			totalWaitingTime += WorkOrderUtilities.computeTimeDiffSec(currDate.getTime(),
+					order.getRequestDate().getTime());
+		}
+		for (WorkOrder order : priorityQueue) {
+			totalWaitingTime += WorkOrderUtilities.computeTimeDiffSec(currDate.getTime(),
+					order.getRequestDate().getTime());
+		}
+		for (WorkOrder order : normalQueue) {
+			totalWaitingTime += WorkOrderUtilities.computeTimeDiffSec(currDate.getTime(),
+					order.getRequestDate().getTime());
+		}
+
+		if (totalWorkOrders != 0)
+			averageWaitingTime = totalWaitingTime / totalWorkOrders;
+
+		return String.format("The Average waiting time of the orders is %s", averageWaitingTime);
 	}
 
 	public String addWorkOrder(WorkOrder workOrder) {
 
+		workOrderType = WorkOrderUtilities.computeWorkOrderType(workOrder.getRequestorId());
+		workOrder.setWorkOrderType(workOrderType);
+
 		switch (workOrder.getWorkOrderType()) {
 		case NORMAL: {
+
+			if (checkExists(normalQueue, workOrder.getRequestorId()))
+				return String.format("Order rejected. Order ID: %s already exists in the system",
+						workOrder.getRequestorId());
+
 			normalQueue.add(workOrder);
 			break;
 		}
 		case PRIORITY: {
+
+			if (checkExists(priorityQueue, workOrder.getRequestorId()))
+				return String.format("Order rejected. Order ID: %s already exists in the system",
+						workOrder.getRequestorId());
+
 			priorityQueue.add(workOrder);
 			break;
 		}
 		case VIP: {
+
+			if (checkExists(vipQueue, workOrder.getRequestorId()))
+				return String.format("Order rejected. Order ID: %s already exists in the system",
+						workOrder.getRequestorId());
+
 			vipQueue.add(workOrder);
 			break;
 		}
 		case MANAGEMENT: {
+
+			if (checkExists(managementQueue, workOrder.getRequestorId()))
+				return String.format("Order rejected. Order ID: %s already exists in the system",
+						workOrder.getRequestorId());
+
 			managementQueue.add(workOrder);
 			break;
 		}
@@ -184,8 +234,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		// handle exception
 
-		return String.format("Work Order with ID: %s has been added to the system at %t", workOrder.getRequestorId(),
-				new Date());
+		return String.format("Success. Work Order with ID: %s has been added to the system at %t",
+				workOrder.getRequestorId(), new Date());
+	}
+
+	private boolean checkExists(Queue<WorkOrder> queue, int requestorId) {
+		return queue.stream().filter(o -> o.getRequestorId() == requestorId).findFirst().isPresent();
 	}
 
 }

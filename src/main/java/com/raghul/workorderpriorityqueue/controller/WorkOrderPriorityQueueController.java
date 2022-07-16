@@ -1,19 +1,30 @@
 package com.raghul.workorderpriorityqueue.controller;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.raghul.workorderpriorityqueue.constants.WorkOrderPriorityQueueConstants;
+import com.raghul.workorderpriorityqueue.entity.WorkOrder;
+import com.raghul.workorderpriorityqueue.entity.WorkOrderType;
 import com.raghul.workorderpriorityqueue.service.WorkOrderService;
+import com.raghul.workorderpriorityqueue.utilities.WorkOrderUtilities;
 
 @Controller
+@RequestMapping("api/v1/workOrder")
+@ResponseBody
 public class WorkOrderPriorityQueueController {
 
 	private final WorkOrderService workOrderService;
+	long rank = 0;
+	WorkOrderType workOrderType;
 
 	@Autowired
 	public WorkOrderPriorityQueueController(WorkOrderService workOrderService) {
@@ -21,26 +32,29 @@ public class WorkOrderPriorityQueueController {
 		this.workOrderService = workOrderService;
 	}
 
-	@RequestMapping("api/v1/workOrder")
-	@ResponseBody
-
-	/*
-	 * @GetMapping("/test") public String test() { return "test working";
-	 * 
-	 * }
-	 * 
-	 * @GetMapping("save") public String saveWorkOrder(int id, Date orderDate) {
-	 * return workOrderService.saveWorkOrder(id, orderDate);
-	 * 
-	 * }
-	 */
-
-	@GetMapping()
-	public String getPosition() {
+	@GetMapping
+	public Date getPosition() {
 		int id = 0;
-		return workOrderService.getPosition(id);
-		// return "pos working";
+		// return workOrderService.getPosition(id);
+		return new Date();
 
+	}
+
+	@PostMapping
+	public String saveWorkOrder(@RequestBody WorkOrder workOrder) {
+
+		// check the id is already there
+		// check not null
+		workOrderType = WorkOrderUtilities.computeWorkOrderType(workOrder.getRequestorId());
+		workOrder.setWorkOrderType(workOrderType);
+
+		// rank = computeRank(workOrderType, workOrder.getRequestDate());
+		// workOrder.setRank(rank);
+
+		return workOrderService.addWorkOrder(workOrder);
+
+		// handle exception if not saved
+		// compute rank here
 	}
 
 }

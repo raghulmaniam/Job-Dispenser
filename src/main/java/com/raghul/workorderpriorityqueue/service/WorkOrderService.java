@@ -7,9 +7,9 @@ import com.raghul.workorderpriorityqueue.entity.WorkOrder;
 
 public interface WorkOrderService {
 
-	public String saveWorkOrder(int id, Date orderDate);
+	public String addWorkOrder(WorkOrder workOrder);
 
-	public WorkOrder deQueueWorkOrder();
+	public int deQueueWorkOrder();
 
 	public List<Integer> getWorkOrderIdList();
 

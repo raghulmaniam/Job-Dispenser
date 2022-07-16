@@ -1,9 +1,11 @@
 package com.raghul.workorderpriorityqueue.utilities;
 
 import java.util.Date;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import com.raghul.workorderpriorityqueue.constants.WorkOrderPriorityQueueConstants;
+import com.raghul.workorderpriorityqueue.entity.WorkOrder;
 import com.raghul.workorderpriorityqueue.entity.WorkOrderType;
 
 public class WorkOrderUtilities {
@@ -47,6 +49,10 @@ public class WorkOrderUtilities {
 			return WorkOrderType.VIP;
 		else
 			return WorkOrderType.NORMAL;
+	}
+
+	public static boolean checkExists(Queue<WorkOrder> queue, int requestorId) {
+		return queue.stream().filter(o -> o.getRequestorId() == requestorId).findFirst().isPresent();
 	}
 
 }

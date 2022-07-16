@@ -192,7 +192,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		switch (workOrder.getWorkOrderType()) {
 		case NORMAL: {
 
-			if (checkExists(normalQueue, workOrder.getRequestorId()))
+			if (WorkOrderUtilities.checkExists(normalQueue, workOrder.getRequestorId()))
 				return String.format("Order rejected. Order ID: %s already exists in the system",
 						workOrder.getRequestorId());
 
@@ -201,7 +201,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 		case PRIORITY: {
 
-			if (checkExists(priorityQueue, workOrder.getRequestorId()))
+			if (WorkOrderUtilities.checkExists(priorityQueue, workOrder.getRequestorId()))
 				return String.format("Order rejected. Order ID: %s already exists in the system",
 						workOrder.getRequestorId());
 
@@ -210,7 +210,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 		case VIP: {
 
-			if (checkExists(vipQueue, workOrder.getRequestorId()))
+			if (WorkOrderUtilities.checkExists(vipQueue, workOrder.getRequestorId()))
 				return String.format("Order rejected. Order ID: %s already exists in the system",
 						workOrder.getRequestorId());
 
@@ -219,7 +219,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 		case MANAGEMENT: {
 
-			if (checkExists(managementQueue, workOrder.getRequestorId()))
+			if (WorkOrderUtilities.checkExists(managementQueue, workOrder.getRequestorId()))
 				return String.format("Order rejected. Order ID: %s already exists in the system",
 						workOrder.getRequestorId());
 
@@ -236,10 +236,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		return String.format("Success. Work Order with ID: %s has been added to the system at %t",
 				workOrder.getRequestorId(), new Date());
-	}
-
-	private boolean checkExists(Queue<WorkOrder> queue, int requestorId) {
-		return queue.stream().filter(o -> o.getRequestorId() == requestorId).findFirst().isPresent();
 	}
 
 }

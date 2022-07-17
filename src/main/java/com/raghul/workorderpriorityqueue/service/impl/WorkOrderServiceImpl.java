@@ -30,64 +30,85 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	Date currDate;
 	int totalWaitingTime, totalWorkOrders, averageWaitingTime;
 	long topNormalQueueRank, topPriorityQueueRank, topVipQueueRank = 0;
+	WorkOrder managementWorkOrder, normalQueueWorkOrder, prioriyQueueWorkOrder, vipQueueWorkOrder;
 
-	public int deQueueWorkOrder() {
-		WorkOrder topWorkOrder;
+	public String deQueueWorkOrder() throws Exception {
+
+		if (normalQueue.isEmpty() && priorityQueue.isEmpty() && managementQueue.isEmpty() && vipQueue.isEmpty()) {
+			return "No Work in the system. Empty queue";
+		}
 
 		if (!managementQueue.isEmpty()) {
-			topWorkOrder = managementQueue.poll();
-			return topWorkOrder.getRequestorId();
-		} else {
-			WorkOrder normalQueueWorkOrder = normalQueue.peek();
 
+			managementWorkOrder = managementQueue.poll();
+			return String.format("Order ID: %s | Date: %s", managementWorkOrder.getRequestorId(),
+					managementWorkOrder.getRequestDate());
+
+		} else {
+
+			// reset
+			topPriorityQueueRank = 0;
+			topNormalQueueRank = 0;
+			topVipQueueRank = 0;
+
+			normalQueueWorkOrder = normalQueue.peek();
 			if (normalQueueWorkOrder != null) {
 				topNormalQueueRank = WorkOrderUtilities.computeRank(normalQueueWorkOrder.getWorkOrderType(),
 						normalQueueWorkOrder.getRequestDate());
 			}
 
-			WorkOrder prioriyQueueWorkOrder = priorityQueue.peek();
+			prioriyQueueWorkOrder = priorityQueue.peek();
 			if (prioriyQueueWorkOrder != null) {
 				topPriorityQueueRank = WorkOrderUtilities.computeRank(prioriyQueueWorkOrder.getWorkOrderType(),
 						prioriyQueueWorkOrder.getRequestDate());
 			}
 
-			WorkOrder vipQueueWorkOrder = vipQueue.peek();
+			vipQueueWorkOrder = vipQueue.peek();
 			if (vipQueueWorkOrder != null) {
 				topVipQueueRank = WorkOrderUtilities.computeRank(vipQueueWorkOrder.getWorkOrderType(),
 						vipQueueWorkOrder.getRequestDate());
 
 			}
 
-			// check for null case
 			if (topVipQueueRank > topNormalQueueRank && topVipQueueRank > topPriorityQueueRank) {
-				return vipQueue.poll().getRequestorId();
+				vipQueueWorkOrder = vipQueue.poll();
+				return String.format("Order ID: %s | Date: %s ", vipQueueWorkOrder.getRequestorId(),
+						vipQueueWorkOrder.getRequestDate());
 			} else if (topPriorityQueueRank > topNormalQueueRank) {
-				return priorityQueue.poll().getRequestorId();
-			} else
-				return normalQueue.poll().getRequestorId();
+				prioriyQueueWorkOrder = priorityQueue.poll();
+				return String.format("Order ID: %s | Date: %s", prioriyQueueWorkOrder.getRequestorId(),
+						prioriyQueueWorkOrder.getRequestDate());
+			} else {
+				normalQueueWorkOrder = normalQueue.poll();
+				return String.format("Order ID: %s | Date: %s", normalQueueWorkOrder.getRequestorId(),
+						normalQueueWorkOrder.getRequestDate());
+			}
 		}
-
 	}
 
-	public List<Integer> getWorkOrderIdList() {
+	public List<Integer> getWorkOrderIdList() throws Exception {
 
 		if (!workOrderIdList.isEmpty())
 			workOrderIdList.clear();
 
 		for (WorkOrder order : managementQueue) {
 			workOrderIdList.add(order.getRequestorId());
+
+			System.out.println("id: " + order.getRequestorId() + " | rank : " + order.getRank());
 		}
 
 		rebuildPriortyQueue();
 
 		for (WorkOrder order : sortedQueue) {
 			workOrderIdList.add(order.getRequestorId());
+
+			System.out.println("id: " + order.getRequestorId() + " | rank : " + order.getRank());
 		}
 
 		return workOrderIdList;
 	}
 
-	private void rebuildPriortyQueue() {
+	private void rebuildPriortyQueue() throws Exception {
 
 		if (!sortedQueue.isEmpty())
 			sortedQueue.clear();
@@ -113,7 +134,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	}
 
-	public String removeWorkOrderbyId(int id) {
+	public String removeWorkOrderbyId(int id) throws Exception {
 		WorkOrderType type = WorkOrderUtilities.computeWorkOrderType(id);
 
 		switch (type) {
@@ -134,15 +155,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			break;
 		}
 		default: {
-//exception
+			throw new Exception("check input format");
 		}
 		}
 
-		return String.format("Success. The work order with Id: %s has been removed from the system", id);
+		return String.format("Work order Id: %s removed successfully", id);
 	}
 
 	private void removeItemFromQueue(Queue<WorkOrder> queue, int id) {
-		// check if the item gets removed from the master list
 
 		for (WorkOrder order : queue) {
 			if (order.getRequestorId() == id) {
@@ -153,11 +173,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	}
 
-	public String getPosition(int id) {
-		workOrderIdList = getWorkOrderIdList();
+	public String getPosition(int id) throws Exception {
 
-		// handle exception
-		return String.valueOf(workOrderIdList.indexOf(id));
+		workOrderIdList = getWorkOrderIdList();
+		if (workOrderIdList.contains(id))
+			return "Position in the queue: " + String.valueOf(workOrderIdList.indexOf(id));
+		else
+			return "Work ID: " + id + " doesn't exists";
 	}
 
 	public String getAverageWaitingTime() {
@@ -190,10 +212,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if (totalWorkOrders != 0)
 			averageWaitingTime = totalWaitingTime / totalWorkOrders;
 
-		return String.format("The Average waiting time of the orders is %s", averageWaitingTime);
+		return String.format("Average waiting time: %s", averageWaitingTime);
 	}
 
-	public String addWorkOrder(WorkOrder workOrder) {
+	public String addWorkOrder(WorkOrder workOrder) throws Exception {
 
 		workOrderType = WorkOrderUtilities.computeWorkOrderType(workOrder.getRequestorId());
 		workOrder.setWorkOrderType(workOrderType);
@@ -202,7 +224,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		case NORMAL: {
 
 			if (WorkOrderUtilities.checkExists(normalQueue, workOrder.getRequestorId()))
-				return String.format("Order rejected. Order ID: %s already exists in the system",
+				return String.format("Order ID: %s already exists in the system. Order rejected.",
 						workOrder.getRequestorId());
 
 			normalQueue.add(workOrder);
@@ -211,7 +233,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		case PRIORITY: {
 
 			if (WorkOrderUtilities.checkExists(priorityQueue, workOrder.getRequestorId()))
-				return String.format("Order rejected. Order ID: %s already exists in the system",
+				return String.format("Order ID: %s already exists in the system. Order rejected.",
 						workOrder.getRequestorId());
 
 			priorityQueue.add(workOrder);
@@ -220,7 +242,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		case VIP: {
 
 			if (WorkOrderUtilities.checkExists(vipQueue, workOrder.getRequestorId()))
-				return String.format("Order rejected. Order ID: %s already exists in the system",
+				return String.format("Order ID: %s already exists in the system. Order rejected.",
 						workOrder.getRequestorId());
 
 			vipQueue.add(workOrder);
@@ -229,25 +251,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		case MANAGEMENT: {
 
 			if (WorkOrderUtilities.checkExists(managementQueue, workOrder.getRequestorId()))
-				return String.format("Order rejected. Order ID: %s already exists in the system",
+				return String.format("Order ID: %s already exists in the system. Order rejected.",
 						workOrder.getRequestorId());
 
 			managementQueue.add(workOrder);
 			break;
 		}
 		default: {
-			// exception
+			throw new Exception("check input format");
+		}
 		}
 
-		}
-
-		// handle exception
-
-//		return String.format("Success. Work Order with ID: %s has been added to the system at %s",
-//				workOrder.getRequestorId(), new Date());
-
-		return "test success";
-
+		return String.format("Work order Id: %s added successfully", workOrder.getRequestorId());
 	}
 
 }
@@ -262,7 +277,6 @@ class WorkOrderComparator implements Comparator<WorkOrder> {
 			return -1;
 		else
 			return 0;
-
 	}
 
 }

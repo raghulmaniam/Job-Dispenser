@@ -2,8 +2,6 @@ package com.raghul.workorderpriorityqueue.controller;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.raghul.workorderpriorityqueue.constants.WorkOrderPriorityQueueConstants;
 import com.raghul.workorderpriorityqueue.entity.WorkOrder;
-import com.raghul.workorderpriorityqueue.entity.WorkOrderType;
 import com.raghul.workorderpriorityqueue.service.WorkOrderService;
-import com.raghul.workorderpriorityqueue.utilities.WorkOrderUtilities;
 
 @Controller
 @RequestMapping("api/v1/workOrder")
@@ -33,67 +28,87 @@ public class WorkOrderPriorityQueueController {
 		this.workOrderService = workOrderService;
 	}
 
-	@GetMapping
-	public Date getPosition() {
-		int id = 0;
-		// return workOrderService.getPosition(id);
+	@GetMapping("date")
+	public Date getCurrentDate() {
 		return new Date();
+
+	}
+
+	@GetMapping("test")
+	public String test() {
+		return "abc chr(10)" + "abcd \\n abcde \t abc";
 
 	}
 
 	@PostMapping("add")
 	public String addWorkOrder(@RequestBody WorkOrder workOrder) {
 
-		// check not null
+		try {
+			if (workOrder.getRequestDate().compareTo(new Date()) == 1)
+				return "Entered dateTime is after the current dateTime. Enter a valid date ";
 
-		return workOrderService.addWorkOrder(workOrder);
-		// handle exception if not saved
-		// compute rank here
+			return workOrderService.addWorkOrder(workOrder);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Exception occured." + e;
+		}
 	}
 
 	@GetMapping("deQueue")
-	public int deQueueWorkOrder() {
+	public String deQueueWorkOrder() {
 
-		return workOrderService.deQueueWorkOrder();
-		// handle exception if not saved
-		// compute rank here
+		try {
+			return workOrderService.deQueueWorkOrder();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Exception occured." + e;
+		}
 	}
 
 	@GetMapping("list")
 	public List<Integer> getWorkOrderIdList() {
 
-		return workOrderService.getWorkOrderIdList();
-		// handle exception if not saved
-		// compute rank here
+		try {
+			return workOrderService.getWorkOrderIdList();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@PostMapping("remove/{id}")
 	public String removeWorkOrderbyId(@PathVariable Integer id) {
 
-		// check not null
-
-		return workOrderService.removeWorkOrderbyId(id);
-		// handle exception if not saved
-		// compute rank here
+		try {
+			return workOrderService.removeWorkOrderbyId(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Exception occured." + e;
+		}
 	}
 
 	@PostMapping("pos/{id}")
 	public String getPosition(@PathVariable Integer id) {
 
 		// check not null
+		try {
+			return workOrderService.getPosition(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Exception occured." + e;
+		}
 
-		return workOrderService.getPosition(id);
-
-		// handle exception if not saved
-		// compute rank here
 	}
 
 	@GetMapping("avgWait")
 	public String getAverageWaitingTime() {
 
-		return workOrderService.getAverageWaitingTime();
-		// handle exception if not saved
-		// compute rank here
+		try {
+			return workOrderService.getAverageWaitingTime();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Exception occured." + e;
+		}
 	}
 
 }

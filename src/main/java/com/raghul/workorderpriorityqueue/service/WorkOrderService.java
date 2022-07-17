@@ -1,21 +1,20 @@
 package com.raghul.workorderpriorityqueue.service;
 
-import java.util.Date;
 import java.util.List;
 
 import com.raghul.workorderpriorityqueue.entity.WorkOrder;
 
 public interface WorkOrderService {
 
-	public String addWorkOrder(WorkOrder workOrder);
+	public String addWorkOrder(WorkOrder workOrder) throws Exception;
 
-	public int deQueueWorkOrder();
+	public String deQueueWorkOrder() throws Exception;
 
-	public List<Integer> getWorkOrderIdList();
+	public List<Integer> getWorkOrderIdList() throws Exception;
 
-	public String removeWorkOrderbyId(int id);
+	public String removeWorkOrderbyId(int id) throws Exception;
 
-	public String getPosition(int id);
+	public String getPosition(int id) throws Exception;
 
 	public String getAverageWaitingTime();
 

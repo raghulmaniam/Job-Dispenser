@@ -10,7 +10,7 @@ import com.raghul.workorderpriorityqueue.entity.WorkOrderType;
 
 public class WorkOrderUtilities {
 
-	public static long computeRank(WorkOrderType workOrderType, Date requestDate) {
+	public static long computeRank(WorkOrderType workOrderType, Date requestDate) throws Exception {
 
 		long seconds = computeTimeDiffSec(new Date().getTime(), requestDate.getTime());
 
@@ -27,8 +27,7 @@ public class WorkOrderUtilities {
 			/* formula : max(4; 2n log n) */
 		}
 		default: {
-			// exception
-			return Long.MIN_VALUE;
+			throw new Exception("Check the input format");
 		}
 		}
 	}

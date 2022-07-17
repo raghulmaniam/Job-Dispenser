@@ -29,6 +29,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	WorkOrderType workOrderType;
 	Date currDate;
 	int totalWaitingTime, totalWorkOrders, averageWaitingTime;
+	long topNormalQueueRank, topPriorityQueueRank, topVipQueueRank = 0;
 
 	public int deQueueWorkOrder() {
 		WorkOrder topWorkOrder;
@@ -38,26 +39,32 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			return topWorkOrder.getRequestorId();
 		} else {
 			WorkOrder normalQueueWorkOrder = normalQueue.peek();
+
+			if (normalQueueWorkOrder != null) {
+				topNormalQueueRank = WorkOrderUtilities.computeRank(normalQueueWorkOrder.getWorkOrderType(),
+						normalQueueWorkOrder.getRequestDate());
+			}
+
 			WorkOrder prioriyQueueWorkOrder = priorityQueue.peek();
+			if (prioriyQueueWorkOrder != null) {
+				topPriorityQueueRank = WorkOrderUtilities.computeRank(prioriyQueueWorkOrder.getWorkOrderType(),
+						prioriyQueueWorkOrder.getRequestDate());
+			}
+
 			WorkOrder vipQueueWorkOrder = vipQueue.peek();
+			if (vipQueueWorkOrder != null) {
+				topVipQueueRank = WorkOrderUtilities.computeRank(vipQueueWorkOrder.getWorkOrderType(),
+						vipQueueWorkOrder.getRequestDate());
 
-			long topNormalQueueRank = WorkOrderUtilities.computeRank(normalQueueWorkOrder.getWorkOrderType(),
-					normalQueueWorkOrder.getRequestDate());
-
-			long topPriorityQueueRank = WorkOrderUtilities.computeRank(prioriyQueueWorkOrder.getWorkOrderType(),
-					prioriyQueueWorkOrder.getRequestDate());
-
-			long topvipQueueRank = WorkOrderUtilities.computeRank(vipQueueWorkOrder.getWorkOrderType(),
-					vipQueueWorkOrder.getRequestDate());
+			}
 
 			// check for null case
-			if (topvipQueueRank > topNormalQueueRank && topvipQueueRank > topPriorityQueueRank) {
+			if (topVipQueueRank > topNormalQueueRank && topVipQueueRank > topPriorityQueueRank) {
 				return vipQueue.poll().getRequestorId();
 			} else if (topPriorityQueueRank > topNormalQueueRank) {
 				return priorityQueue.poll().getRequestorId();
 			} else
 				return normalQueue.poll().getRequestorId();
-
 		}
 
 	}
@@ -178,6 +185,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 					order.getRequestDate().getTime());
 		}
 
+		totalWorkOrders = managementQueue.size() + vipQueue.size() + priorityQueue.size() + normalQueue.size();
+
 		if (totalWorkOrders != 0)
 			averageWaitingTime = totalWaitingTime / totalWorkOrders;
 
@@ -234,8 +243,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		// handle exception
 
-		return String.format("Success. Work Order with ID: %s has been added to the system at %t",
-				workOrder.getRequestorId(), new Date());
+//		return String.format("Success. Work Order with ID: %s has been added to the system at %s",
+//				workOrder.getRequestorId(), new Date());
+
+		return "test success";
+
 	}
 
 }
@@ -246,7 +258,7 @@ class WorkOrderComparator implements Comparator<WorkOrder> {
 
 		if (order1.getRank() < order2.getRank())
 			return 1;
-		else if (order1.getRank() < order2.getRank())
+		else if (order1.getRank() > order2.getRank())
 			return -1;
 		else
 			return 0;

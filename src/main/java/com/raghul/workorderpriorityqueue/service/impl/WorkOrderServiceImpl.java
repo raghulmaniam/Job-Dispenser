@@ -103,7 +103,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// building the management queue first
 		for (WorkOrder order : managementQueue) {
 			workOrderIdList.add(order.getRequestorId());
-			System.out.println("id: " + order.getRequestorId() + " | rank : " + order.getRank());
+			System.out.println(
+					"-- console log to test -> id: " + order.getRequestorId() + " | rank : " + order.getRank());
 		}
 
 		// priority queue for the remaining non-management work orders
@@ -111,8 +112,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		for (WorkOrder order : sortedQueue) {
 			workOrderIdList.add(order.getRequestorId());
-
-			System.out.println("id: " + order.getRequestorId() + " | rank : " + order.getRank());
+			System.out.println(
+					"-- console log to test -> id: " + order.getRequestorId() + " | rank : " + order.getRank());
 		}
 
 		return workOrderIdList;

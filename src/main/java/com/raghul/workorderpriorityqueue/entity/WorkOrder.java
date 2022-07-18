@@ -4,6 +4,10 @@ import java.util.Date;
 
 public class WorkOrder {
 
+	/*
+	 * Developer: Raghul Subramaniam email: raghulmaniam@gmail.com
+	 */
+
 	private int requestorId;
 	private Date requestDate;
 	private WorkOrderType workOrderType;

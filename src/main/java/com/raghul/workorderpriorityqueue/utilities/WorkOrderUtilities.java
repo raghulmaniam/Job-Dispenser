@@ -10,6 +10,10 @@ import com.raghul.workorderpriorityqueue.entity.WorkOrderType;
 
 public class WorkOrderUtilities {
 
+	/*
+	 * Developer: Raghul Subramaniam email: raghulmaniam@gmail.com
+	 */
+
 	public static long computeRank(WorkOrderType workOrderType, Date requestDate) throws Exception {
 
 		long seconds = computeTimeDiffSec(new Date().getTime(), requestDate.getTime());

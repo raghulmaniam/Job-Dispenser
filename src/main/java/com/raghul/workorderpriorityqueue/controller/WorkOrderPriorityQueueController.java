@@ -19,6 +19,10 @@ import com.raghul.workorderpriorityqueue.service.WorkOrderService;
 @ResponseBody
 public class WorkOrderPriorityQueueController {
 
+	/*
+	 * Developer: Raghul Subramaniam email: raghulmaniam@gmail.com
+	 */
+
 	private final WorkOrderService workOrderService;
 	long rank = 0;
 
@@ -30,13 +34,8 @@ public class WorkOrderPriorityQueueController {
 
 	@GetMapping("date")
 	public Date getCurrentDate() {
+		// dummy endpoint to get the current date
 		return new Date();
-
-	}
-
-	@GetMapping("test")
-	public String test() {
-		return "abc chr(10)" + "abcd \\n abcde \t abc";
 
 	}
 

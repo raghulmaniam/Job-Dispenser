@@ -18,6 +18,10 @@ import com.raghul.workorderpriorityqueue.utilities.WorkOrderUtilities;
 @Service
 public class WorkOrderServiceImpl implements WorkOrderService {
 
+	/*
+	 * Developer: Raghul Subramaniam email: raghulmaniam@gmail.com
+	 */
+
 	PriorityQueue<WorkOrder> sortedQueue = new PriorityQueue<WorkOrder>(new WorkOrderComparator());
 
 	Queue<WorkOrder> normalQueue = new LinkedList<WorkOrder>();

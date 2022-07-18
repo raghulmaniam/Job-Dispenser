@@ -8,7 +8,7 @@ public class WorkOrder {
 	 * Developer: Raghul Subramaniam email: raghulmaniam@gmail.com
 	 */
 
-	private int requestorId;
+	private long requestorId;
 	private Date requestDate;
 	private WorkOrderType workOrderType;
 	private long rank;
@@ -17,25 +17,18 @@ public class WorkOrder {
 
 	}
 
-	public WorkOrder(int requestorId, Date requestDate) {
+	public WorkOrder(long requestorId, Date requestDate) {
 		super();
-
-		System.out.println(requestorId);
-		System.out.println(requestDate);
-		System.out.println("********************");
 
 		this.requestorId = requestorId;
 		this.requestDate = requestDate;
-		// this.rank = rank;
-
-		// to calculate rank here
 	}
 
-	public int getRequestorId() {
+	public long getRequestorId() {
 		return requestorId;
 	}
 
-	public void setRequestorId(int requestorId) {
+	public void setRequestorId(long requestorId) {
 		this.requestorId = requestorId;
 	}
 

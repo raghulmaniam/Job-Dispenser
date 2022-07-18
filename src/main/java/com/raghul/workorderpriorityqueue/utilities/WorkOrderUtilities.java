@@ -41,21 +41,21 @@ public class WorkOrderUtilities {
 		return TimeUnit.MILLISECONDS.toSeconds(time1 - time2);
 	}
 
-	public static WorkOrderType computeWorkOrderType(int requestorId) {
+	public static WorkOrderType computeWorkOrderType(long l) {
 
-		if (requestorId % 3 == 0) {
-			if (requestorId % 5 == 0)
+		if (l % 3 == 0) {
+			if (l % 5 == 0)
 				return WorkOrderType.MANAGEMENT;
 			else
 				return WorkOrderType.PRIORITY;
-		} else if (requestorId % 5 == 0)
+		} else if (l % 5 == 0)
 			return WorkOrderType.VIP;
 		else
 			return WorkOrderType.NORMAL;
 	}
 
-	public static boolean checkExists(Queue<WorkOrder> queue, int requestorId) {
-		return queue.stream().filter(o -> o.getRequestorId() == requestorId).findFirst().isPresent();
+	public static boolean checkExists(Queue<WorkOrder> queue, long l) {
+		return queue.stream().filter(o -> o.getRequestorId() == l).findFirst().isPresent();
 	}
 
 }

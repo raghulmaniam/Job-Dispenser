@@ -29,7 +29,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	Queue<WorkOrder> vipQueue = new LinkedList<WorkOrder>();
 	Queue<WorkOrder> managementQueue = new LinkedList<WorkOrder>();
 
-	List<Integer> workOrderIdList = new ArrayList<Integer>();
+	List<Long> workOrderIdList = new ArrayList<Long>();
 	WorkOrderType workOrderType;
 	Date currDate;
 	int totalWaitingTime, totalWorkOrders, averageWaitingTime;
@@ -90,7 +90,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 	}
 
-	public List<Integer> getWorkOrderIdList() throws Exception {
+	public List<Long> getWorkOrderIdList() throws Exception {
 
 		if (!workOrderIdList.isEmpty())
 			workOrderIdList.clear();

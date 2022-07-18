@@ -42,9 +42,26 @@ public class WorkOrderPriorityQueueController {
 	@PostMapping("add")
 	public String addWorkOrder(@RequestBody WorkOrder workOrder) {
 
+		/*
+		 * An endpoint for adding a ID to queue (enqueue). This endpoint should accept
+		 * two parameters, the ID to enqueue and the time at which the ID was added to
+		 * the queue.
+		 * 
+		 * @POST: http://localhost:8080/api/v1/workOrder/add
+		 * 
+		 * sample JSON: { "requestorId":3,"requestDate":"2022-07-17T13:51:30.497+00:00"
+		 * }
+		 */
+
 		try {
+
+			// sanity check
 			if (workOrder.getRequestDate().compareTo(new Date()) == 1)
 				return "Entered dateTime is after the current dateTime. Enter a valid date ";
+
+			// sanity check
+			if (workOrder == null || workOrder.getRequestorId() <= 0 || workOrder.getRequestDate() == null)
+				return "Please enter a valid JSON input. RequstID and RequestDate needs to be valid ";
 
 			return workOrderService.addWorkOrder(workOrder);
 		} catch (Exception e) {
@@ -56,6 +73,12 @@ public class WorkOrderPriorityQueueController {
 	@GetMapping("deQueue")
 	public String deQueueWorkOrder() {
 
+		/*
+		 * An endpoint for getting the top ID from the queue and removing it (de-queue).
+		 * This endpoint should return the highest ranked ID and the time it was entered
+		 * into the queue.
+		 */
+
 		try {
 			return workOrderService.deQueueWorkOrder();
 		} catch (Exception e) {
@@ -65,7 +88,12 @@ public class WorkOrderPriorityQueueController {
 	}
 
 	@GetMapping("list")
-	public List<Integer> getWorkOrderIdList() {
+	public List<Long> getWorkOrderIdList() {
+
+		/*
+		 * An endpoint for getting the list of IDs in the queue. This endpoint should
+		 * return a list of IDs sorted from highest ranked to lowest.
+		 */
 
 		try {
 			return workOrderService.getWorkOrderIdList();
@@ -78,6 +106,11 @@ public class WorkOrderPriorityQueueController {
 	@PostMapping("remove/{id}")
 	public String removeWorkOrderbyId(@PathVariable Integer id) {
 
+		/*
+		 * An endpoint for removing a specific ID from the queue. This endpoint should
+		 * accept a single parameter, the ID to remove.
+		 */
+
 		try {
 			return workOrderService.removeWorkOrderbyId(id);
 		} catch (Exception e) {
@@ -89,8 +122,14 @@ public class WorkOrderPriorityQueueController {
 	@PostMapping("pos/{id}")
 	public String getPosition(@PathVariable Integer id) {
 
-		// check not null
 		try {
+
+			/*
+			 * An endpoint to get the position of a specific ID in the queue. This endpoint
+			 * should accept one parameter, the ID to get the position of. It should return
+			 * the position of the ID in the queue indexed from 0.
+			 */
+
 			return workOrderService.getPosition(id);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,6 +140,12 @@ public class WorkOrderPriorityQueueController {
 
 	@GetMapping("avgWait")
 	public String getAverageWaitingTime() {
+
+		/*
+		 * An endpoint to get the average wait time. This endpoint should accept a
+		 * single parameter, the current time, and should return the average (mean)
+		 * number of seconds that each ID has been waiting in the queue.
+		 */
 
 		try {
 			return workOrderService.getAverageWaitingTime();

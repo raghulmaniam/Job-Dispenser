@@ -14,7 +14,7 @@ public interface WorkOrderService {
 
 	public String deQueueWorkOrder() throws Exception;
 
-	public List<Integer> getWorkOrderIdList() throws Exception;
+	public List<Long> getWorkOrderIdList() throws Exception;
 
 	public String removeWorkOrderbyId(int id) throws Exception;
 

@@ -42,6 +42,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			return "No Work in the system. Empty queue";
 		}
 
+		// checking the management queue first
 		if (!managementQueue.isEmpty()) {
 
 			managementWorkOrder = managementQueue.poll();
@@ -74,6 +75,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 			}
 
+			// optimal approach - comparing only the top items of all the queues rather than
+			// recomputing the rank for all the items.
+
 			if (topVipQueueRank > topNormalQueueRank && topVipQueueRank > topPriorityQueueRank) {
 				vipQueueWorkOrder = vipQueue.poll();
 				return String.format("Order ID: %s | Date: %s ", vipQueueWorkOrder.getRequestorId(),
@@ -92,15 +96,17 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	public List<Long> getWorkOrderIdList() throws Exception {
 
+		// reset
 		if (!workOrderIdList.isEmpty())
 			workOrderIdList.clear();
 
+		// building the management queue first
 		for (WorkOrder order : managementQueue) {
 			workOrderIdList.add(order.getRequestorId());
-
 			System.out.println("id: " + order.getRequestorId() + " | rank : " + order.getRank());
 		}
 
+		// priority queue for the remaining non-management work orders
 		rebuildPriortyQueue();
 
 		for (WorkOrder order : sortedQueue) {
@@ -114,6 +120,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	private void rebuildPriortyQueue() throws Exception {
 
+		// reset
 		if (!sortedQueue.isEmpty())
 			sortedQueue.clear();
 
@@ -143,39 +150,28 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		switch (type) {
 		case NORMAL: {
-			if (!removeItemFromQueue(normalQueue, id)) {
-				return String.format("Work order Id: %s does not exist", id);
-			}
-			break;
+
+			return removeItemFromQueue(normalQueue, id);
 		}
 		case PRIORITY: {
 
-			if (!removeItemFromQueue(priorityQueue, id)) {
-				return String.format("Work order Id: %s does not exist", id);
-			}
-			break;
+			return removeItemFromQueue(priorityQueue, id);
 		}
 		case VIP: {
-			if (!removeItemFromQueue(vipQueue, id)) {
-				return String.format("Work order Id: %s does not exist", id);
-			}
-			break;
+
+			return removeItemFromQueue(vipQueue, id);
 		}
 		case MANAGEMENT: {
-			if (!removeItemFromQueue(managementQueue, id)) {
-				return String.format("Work order Id: %s does not exist", id);
-			}
-			break;
+
+			return removeItemFromQueue(managementQueue, id);
 		}
 		default: {
 			throw new Exception("check input format");
 		}
 		}
-
-		return String.format("Work order Id: %s removed successfully", id);
 	}
 
-	private Boolean removeItemFromQueue(Queue<WorkOrder> queue, long id) {
+	private String removeItemFromQueue(Queue<WorkOrder> queue, long id) {
 
 		Boolean hasRemoved = false;
 
@@ -187,7 +183,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			}
 		}
 
-		return hasRemoved;
+		if (hasRemoved)
+			return String.format("Work order Id: %s removed successfully", id);
+		else
+			return String.format("Work order Id: %s does not exist", id);
 
 	}
 
@@ -227,10 +226,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		totalWorkOrders = managementQueue.size() + vipQueue.size() + priorityQueue.size() + normalQueue.size();
 
+		// sanity check to avoid arithmetic exception
 		if (totalWorkOrders != 0)
 			averageWaitingTime = totalWaitingTime / totalWorkOrders;
 
-		return String.format("Average waiting time: %s", averageWaitingTime);
+		return String.format("Average waiting time: %s seconds", averageWaitingTime);
 	}
 
 	public String addWorkOrder(WorkOrder workOrder) throws Exception {
@@ -287,6 +287,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 class WorkOrderComparator implements Comparator<WorkOrder> {
 
+	// comparator class for the priority queue
 	public int compare(WorkOrder order1, WorkOrder order2) {
 
 		if (order1.getRank() < order2.getRank())

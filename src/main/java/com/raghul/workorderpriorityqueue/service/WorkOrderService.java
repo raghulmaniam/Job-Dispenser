@@ -16,9 +16,9 @@ public interface WorkOrderService {
 
 	public List<Long> getWorkOrderIdList() throws Exception;
 
-	public String removeWorkOrderbyId(int id) throws Exception;
+	public String removeWorkOrderbyId(long id) throws Exception;
 
-	public String getPosition(int id) throws Exception;
+	public String getPosition(long id) throws Exception;
 
 	public String getAverageWaitingTime();
 

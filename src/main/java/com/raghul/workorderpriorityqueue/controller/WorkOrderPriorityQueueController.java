@@ -110,7 +110,7 @@ public class WorkOrderPriorityQueueController {
 	}
 
 	@PostMapping("remove/{id}")
-	public String removeWorkOrderbyId(@PathVariable Integer id) {
+	public String removeWorkOrderbyId(@PathVariable long id) {
 
 		/*
 		 * An endpoint for removing a specific ID from the queue. This endpoint should
@@ -131,7 +131,7 @@ public class WorkOrderPriorityQueueController {
 	}
 
 	@PostMapping("pos/{id}")
-	public String getPosition(@PathVariable Integer id) {
+	public String getPosition(@PathVariable long id) {
 
 		try {
 

@@ -138,24 +138,33 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	}
 
-	public String removeWorkOrderbyId(int id) throws Exception {
+	public String removeWorkOrderbyId(long id) throws Exception {
 		WorkOrderType type = WorkOrderUtilities.computeWorkOrderType(id);
 
 		switch (type) {
 		case NORMAL: {
-			removeItemFromQueue(normalQueue, id);
+			if (!removeItemFromQueue(normalQueue, id)) {
+				return String.format("Work order Id: %s does not exist", id);
+			}
 			break;
 		}
 		case PRIORITY: {
-			removeItemFromQueue(priorityQueue, id);
+
+			if (!removeItemFromQueue(priorityQueue, id)) {
+				return String.format("Work order Id: %s does not exist", id);
+			}
 			break;
 		}
 		case VIP: {
-			removeItemFromQueue(vipQueue, id);
+			if (!removeItemFromQueue(vipQueue, id)) {
+				return String.format("Work order Id: %s does not exist", id);
+			}
 			break;
 		}
 		case MANAGEMENT: {
-			removeItemFromQueue(managementQueue, id);
+			if (!removeItemFromQueue(managementQueue, id)) {
+				return String.format("Work order Id: %s does not exist", id);
+			}
 			break;
 		}
 		default: {
@@ -166,18 +175,23 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return String.format("Work order Id: %s removed successfully", id);
 	}
 
-	private void removeItemFromQueue(Queue<WorkOrder> queue, int id) {
+	private Boolean removeItemFromQueue(Queue<WorkOrder> queue, long id) {
+
+		Boolean hasRemoved = false;
 
 		for (WorkOrder order : queue) {
 			if (order.getRequestorId() == id) {
 				queue.remove(order);
+				hasRemoved = true;
 				continue;
 			}
 		}
 
+		return hasRemoved;
+
 	}
 
-	public String getPosition(int id) throws Exception {
+	public String getPosition(long id) throws Exception {
 
 		workOrderIdList = getWorkOrderIdList();
 		if (workOrderIdList.contains(id))

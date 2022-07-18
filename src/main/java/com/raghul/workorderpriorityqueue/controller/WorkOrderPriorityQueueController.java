@@ -77,6 +77,9 @@ public class WorkOrderPriorityQueueController {
 		 * An endpoint for getting the top ID from the queue and removing it (de-queue).
 		 * This endpoint should return the highest ranked ID and the time it was entered
 		 * into the queue.
+		 * 
+		 * @GET: http://localhost:8080/api/v1/workOrder/deQueue
+		 * 
 		 */
 
 		try {
@@ -93,6 +96,9 @@ public class WorkOrderPriorityQueueController {
 		/*
 		 * An endpoint for getting the list of IDs in the queue. This endpoint should
 		 * return a list of IDs sorted from highest ranked to lowest.
+		 * 
+		 * @GET: http://localhost:8080/api/v1/workOrder/list
+		 * 
 		 */
 
 		try {
@@ -109,6 +115,11 @@ public class WorkOrderPriorityQueueController {
 		/*
 		 * An endpoint for removing a specific ID from the queue. This endpoint should
 		 * accept a single parameter, the ID to remove.
+		 * 
+		 * @POST: http://localhost:8080/api/v1/workOrder/remove/{id}
+		 * 
+		 * sample: http://localhost:8080/api/v1/workOrder/remove/1
+		 * 
 		 */
 
 		try {
@@ -128,6 +139,10 @@ public class WorkOrderPriorityQueueController {
 			 * An endpoint to get the position of a specific ID in the queue. This endpoint
 			 * should accept one parameter, the ID to get the position of. It should return
 			 * the position of the ID in the queue indexed from 0.
+			 * 
+			 * POST: http://localhost:8080/api/v1/workOrder/pos/{id}
+			 * 
+			 * sample: http://localhost:8080/api/v1/workOrder/pos/17
 			 */
 
 			return workOrderService.getPosition(id);
@@ -145,6 +160,9 @@ public class WorkOrderPriorityQueueController {
 		 * An endpoint to get the average wait time. This endpoint should accept a
 		 * single parameter, the current time, and should return the average (mean)
 		 * number of seconds that each ID has been waiting in the queue.
+		 * 
+		 * GET: http://localhost:8080/api/v1/workOrder/avgWait
+		 * 
 		 */
 
 		try {

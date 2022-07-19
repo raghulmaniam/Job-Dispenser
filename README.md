@@ -58,6 +58,6 @@ Date Format: yyyy-MM-dd HH:mm:ss
 	
 Date Format: yyyy-MM-dd HH:mm:ss
 
-### Known Issues: None
+Known Issues: None
 
-### Release Notes can be found here -- here -- https://drive.google.com/drive/folders/1DEUbaL4RbSrNXE8-ZDhAsHAqT-we1G-q
+Release Notes can be found here -- here -- https://drive.google.com/drive/folders/1DEUbaL4RbSrNXE8-ZDhAsHAqT-we1G-q

@@ -2,9 +2,22 @@
 
 The aim of this application is to submit jobs to the queue and then effectively prioritize the jobs based on their severity and the time they were on the queue. 
 
+## Prerequisites: 
+1. Java 8+
+2. REST client to use the endpoints: Boomerang/ Postman
+
+## steps to build:
+Prerequisite: Maven 3.8.x+ needs to be installed to build the project
+1. Open cmd
+2. change the directory to the project root folder (*/Job-Dispenser). (You should be able to see the pom.xml in your current path)
+3. run the command : mv clean install
+
+<alternatively you can find the latest jar here -- https://drive.google.com/drive/folders/1DEUbaL4RbSrNXE8-ZDhAsHAqT-we1G-q>
+
 ## steps to run:
-1. build the maven project
-2. run the jar using this command : java -jar <jar_name>
+3. navigate to the target folder or the downloaded path of the jar
+4. run the command : java -jar <jar-name.jar>  
+ 	typically its : java -jar work-order-priority-queue-0.0.1-SNAPSHOT.jar
 
 
 ## Functionalities(endpoints):

@@ -15,10 +15,10 @@ The aim of this application is to submit jobs to the queue and then effectively 
 Sample JSON: 
 {
     "requestorId":3,
-    "requestDate":"2022-07-17T13:51:30.497+00:00"
+    "requestDate":"2022-07-19 13:15:52"
 }
 
-(Note: The default format of java.Util.Date class has been used. Please follow the above sample’s format)
+Date Format: yyyy-MM-dd HH:mm:ss
 
 ###### 2. Dispense the highest priority job from the queue (dequeue)
 
@@ -30,14 +30,17 @@ Sample JSON:
 
 ###### 4. Removing a specific job from the queue
 
-@POST: http://localhost:8080/api/v1/workOrder/remove/{id} 
+@DELETE: http://localhost:8080/api/v1/workOrder/remove/{id} 
 	sample: http://localhost:8080/api/v1/workOrder/remove/1
 
 ###### 5. Display the position of a job in the queue.
 
-@POST: http://localhost:8080/api/v1/workOrder/pos/{id} 
+@GET: http://localhost:8080/api/v1/workOrder/pos/{id} 
 	sample: http://localhost:8080/api/v1/workOrder/pos/17 
 
 ###### 6. Show the average wait time for jobs in the queue.
 
-@GET: http://localhost:8080/api/v1/workOrder/avgWait 
+@GET: http://localhost:8080/api/v1/workOrder/avgWait/{dateInput}
+	sample: http://localhost:8080/api/v1/workOrder/avgWait/2022-07-19 13:15:52
+	
+Date Format: yyyy-MM-dd HH:mm:ss

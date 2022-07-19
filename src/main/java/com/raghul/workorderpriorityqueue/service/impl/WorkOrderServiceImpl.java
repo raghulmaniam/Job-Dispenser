@@ -31,12 +31,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	List<Long> workOrderIdList = new ArrayList<Long>();
 	WorkOrderType workOrderType;
-	Date currDate;
 	int totalWaitingTime, totalWorkOrders, averageWaitingTime;
 	long topNormalQueueRank, topPriorityQueueRank, topVipQueueRank = 0;
 	WorkOrder managementWorkOrder, normalQueueWorkOrder, prioriyQueueWorkOrder, vipQueueWorkOrder;
 
-	public String deQueueWorkOrder() throws Exception {
+	public String deQueueWorkOrder(Date Currdate) throws Exception {
 
 		if (normalQueue.isEmpty() && priorityQueue.isEmpty() && managementQueue.isEmpty() && vipQueue.isEmpty()) {
 			return "No Work in the system. Empty queue";
@@ -59,19 +58,19 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			normalQueueWorkOrder = normalQueue.peek();
 			if (normalQueueWorkOrder != null) {
 				topNormalQueueRank = WorkOrderUtilities.computeRank(normalQueueWorkOrder.getWorkOrderType(),
-						normalQueueWorkOrder.getRequestDate());
+						normalQueueWorkOrder.getRequestDate(), Currdate);
 			}
 
 			prioriyQueueWorkOrder = priorityQueue.peek();
 			if (prioriyQueueWorkOrder != null) {
 				topPriorityQueueRank = WorkOrderUtilities.computeRank(prioriyQueueWorkOrder.getWorkOrderType(),
-						prioriyQueueWorkOrder.getRequestDate());
+						prioriyQueueWorkOrder.getRequestDate(), Currdate);
 			}
 
 			vipQueueWorkOrder = vipQueue.peek();
 			if (vipQueueWorkOrder != null) {
 				topVipQueueRank = WorkOrderUtilities.computeRank(vipQueueWorkOrder.getWorkOrderType(),
-						vipQueueWorkOrder.getRequestDate());
+						vipQueueWorkOrder.getRequestDate(), Currdate);
 
 			}
 
@@ -94,7 +93,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 	}
 
-	public List<Long> getWorkOrderIdList() throws Exception {
+	public List<Long> getWorkOrderIdList(Date currDate) throws Exception {
 
 		// reset
 		if (!workOrderIdList.isEmpty())
@@ -108,7 +107,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 
 		// priority queue for the remaining non-management work orders
-		rebuildPriortyQueue();
+		rebuildPriortyQueue(currDate);
 
 		for (WorkOrder order : sortedQueue) {
 			workOrderIdList.add(order.getRequestorId());
@@ -119,7 +118,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return workOrderIdList;
 	}
 
-	private void rebuildPriortyQueue() throws Exception {
+	private void rebuildPriortyQueue(Date currDate) throws Exception {
 
 		// reset
 		if (!sortedQueue.isEmpty())
@@ -127,19 +126,19 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		long rank;
 		for (WorkOrder order : vipQueue) {
-			rank = WorkOrderUtilities.computeRank(order.getWorkOrderType(), order.getRequestDate());
+			rank = WorkOrderUtilities.computeRank(order.getWorkOrderType(), order.getRequestDate(), currDate);
 			order.setRank(rank);
 			sortedQueue.add(order);
 		}
 
 		for (WorkOrder order : priorityQueue) {
-			rank = WorkOrderUtilities.computeRank(order.getWorkOrderType(), order.getRequestDate());
+			rank = WorkOrderUtilities.computeRank(order.getWorkOrderType(), order.getRequestDate(), currDate);
 			order.setRank(rank);
 			sortedQueue.add(order);
 		}
 
 		for (WorkOrder order : normalQueue) {
-			rank = WorkOrderUtilities.computeRank(order.getWorkOrderType(), order.getRequestDate());
+			rank = WorkOrderUtilities.computeRank(order.getWorkOrderType(), order.getRequestDate(), currDate);
 			order.setRank(rank);
 			sortedQueue.add(order);
 		}
@@ -191,19 +190,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	}
 
-	public String getPosition(long id) throws Exception {
+	public String getPosition(long id, Date currDate) throws Exception {
 
-		workOrderIdList = getWorkOrderIdList();
+		workOrderIdList = getWorkOrderIdList(currDate);
 		if (workOrderIdList.contains(id))
 			return "Position in the queue: " + String.valueOf(workOrderIdList.indexOf(id));
 		else
 			return "Work ID: " + id + " doesn't exists";
 	}
 
-	public String getAverageWaitingTime() {
+	public String getAverageWaitingTime(Date currDate) {
 
 		// re-setting values
-		currDate = new Date();
 		totalWaitingTime = 0;
 		totalWorkOrders = 0;
 		averageWaitingTime = 0;

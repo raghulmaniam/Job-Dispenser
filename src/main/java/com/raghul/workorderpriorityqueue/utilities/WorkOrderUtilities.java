@@ -14,9 +14,9 @@ public class WorkOrderUtilities {
 	 * Developer: Raghul Subramaniam email: raghulmaniam@gmail.com
 	 */
 
-	public static long computeRank(WorkOrderType workOrderType, Date requestDate) throws Exception {
+	public static long computeRank(WorkOrderType workOrderType, Date requestDate, Date currdate) throws Exception {
 
-		long seconds = computeTimeDiffSec(new Date().getTime(), requestDate.getTime());
+		long seconds = computeTimeDiffSec(currdate.getTime(), requestDate.getTime());
 
 		switch (workOrderType) {
 		case NORMAL: {

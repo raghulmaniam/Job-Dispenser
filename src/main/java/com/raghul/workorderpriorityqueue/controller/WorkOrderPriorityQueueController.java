@@ -1,9 +1,14 @@
 package com.raghul.workorderpriorityqueue.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.raghul.workorderpriorityqueue.constants.WorkOrderPriorityQueueConstants;
 import com.raghul.workorderpriorityqueue.entity.WorkOrder;
 import com.raghul.workorderpriorityqueue.service.WorkOrderService;
 
@@ -25,10 +31,13 @@ public class WorkOrderPriorityQueueController {
 
 	private final WorkOrderService workOrderService;
 	long rank = 0;
+	SimpleDateFormat dateFormat = new SimpleDateFormat(WorkOrderPriorityQueueConstants.DATEFORMAT_YYYTMMDDHHMMSS);
+	Date currDate;
 
 	@Autowired
 	public WorkOrderPriorityQueueController(WorkOrderService workOrderService) {
 		super();
+		dateFormat.setTimeZone(TimeZone.getTimeZone(WorkOrderPriorityQueueConstants.IRELAND));
 		this.workOrderService = workOrderService;
 	}
 
@@ -36,6 +45,13 @@ public class WorkOrderPriorityQueueController {
 	public Date getCurrentDate() {
 		// dummy endpoint to get the current date
 		return new Date();
+
+	}
+
+	@GetMapping("dateFormat")
+	public String getCurrentDateFormat() {
+		// dummy endpoint to get the Formatted current date
+		return dateFormat.format(new Date());
 
 	}
 
@@ -49,14 +65,17 @@ public class WorkOrderPriorityQueueController {
 		 * 
 		 * @POST: http://localhost:8080/api/v1/workOrder/add
 		 * 
-		 * sample JSON: { "requestorId":3,"requestDate":"2022-07-17T13:51:30.497+00:00"
-		 * }
+		 * sample JSON: { "requestorId":3,"requestDate":"2022-07-19 13:15:52" }
+		 * 
+		 * Date Format: yyyy-MM-dd HH:mm:ss
 		 */
 
 		try {
 
+			currDate = getCurrentDateWithTimeZone();
+
 			// sanity check
-			if (workOrder.getRequestDate().compareTo(new Date()) == 1)
+			if (workOrder.getRequestDate().compareTo(currDate) == 1)
 				return "Entered dateTime is after the current dateTime. Enter a valid date ";
 
 			// sanity check
@@ -64,6 +83,7 @@ public class WorkOrderPriorityQueueController {
 				return "Please enter a valid JSON input. RequstID and RequestDate needs to be valid ";
 
 			return workOrderService.addWorkOrder(workOrder);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "Exception occured." + e;
@@ -83,7 +103,10 @@ public class WorkOrderPriorityQueueController {
 		 */
 
 		try {
-			return workOrderService.deQueueWorkOrder();
+
+			currDate = getCurrentDateWithTimeZone();
+
+			return workOrderService.deQueueWorkOrder(currDate);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "Exception occured." + e;
@@ -102,21 +125,24 @@ public class WorkOrderPriorityQueueController {
 		 */
 
 		try {
-			return workOrderService.getWorkOrderIdList();
+
+			currDate = getCurrentDateWithTimeZone();
+
+			return workOrderService.getWorkOrderIdList(currDate);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	@PostMapping("remove/{id}")
+	@DeleteMapping("remove/{id}")
 	public String removeWorkOrderbyId(@PathVariable long id) {
 
 		/*
 		 * An endpoint for removing a specific ID from the queue. This endpoint should
 		 * accept a single parameter, the ID to remove.
 		 * 
-		 * @POST: http://localhost:8080/api/v1/workOrder/remove/{id}
+		 * @DELETE: http://localhost:8080/api/v1/workOrder/remove/{id}
 		 * 
 		 * sample: http://localhost:8080/api/v1/workOrder/remove/1
 		 * 
@@ -130,7 +156,7 @@ public class WorkOrderPriorityQueueController {
 		}
 	}
 
-	@PostMapping("pos/{id}")
+	@GetMapping("pos/{id}")
 	public String getPosition(@PathVariable long id) {
 
 		try {
@@ -140,12 +166,14 @@ public class WorkOrderPriorityQueueController {
 			 * should accept one parameter, the ID to get the position of. It should return
 			 * the position of the ID in the queue indexed from 0.
 			 * 
-			 * POST: http://localhost:8080/api/v1/workOrder/pos/{id}
+			 * GET: http://localhost:8080/api/v1/workOrder/pos/{id}
 			 * 
 			 * sample: http://localhost:8080/api/v1/workOrder/pos/17
 			 */
 
-			return workOrderService.getPosition(id);
+			currDate = getCurrentDateWithTimeZone();
+
+			return workOrderService.getPosition(id, currDate);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "Exception occured." + e;
@@ -153,24 +181,41 @@ public class WorkOrderPriorityQueueController {
 
 	}
 
-	@GetMapping("avgWait")
-	public String getAverageWaitingTime() {
+	@GetMapping("avgWait/{dateInput}")
+	public String getAverageWaitingTime(@PathVariable String dateInput) {
 
 		/*
 		 * An endpoint to get the average wait time. This endpoint should accept a
 		 * single parameter, the current time, and should return the average (mean)
 		 * number of seconds that each ID has been waiting in the queue.
 		 * 
-		 * GET: http://localhost:8080/api/v1/workOrder/avgWait
+		 * GET: http://localhost:8080/api/v1/workOrder/avgWait/{dateInput}
+		 * 
+		 * sample: http://localhost:8080/api/v1/workOrder/avgWait/2022-07-19 13:15:52
+		 * 
+		 * Date Format: yyyy-MM-dd HH:mm:ss
 		 * 
 		 */
 
 		try {
-			return workOrderService.getAverageWaitingTime();
+
+			try {
+
+				currDate = dateFormat.parse(dateInput);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "Check the date format(yyyy-MM-dd HH:mm:ss) and try again";
+			}
+
+			return workOrderService.getAverageWaitingTime(currDate);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "Exception occured." + e;
 		}
+	}
+
+	private Date getCurrentDateWithTimeZone() throws ParseException {
+		return dateFormat.parse(dateFormat.format(new Date()));
 	}
 
 }

@@ -57,3 +57,7 @@ Date Format: yyyy-MM-dd HH:mm:ss
 	sample: http://localhost:8080/api/v1/workOrder/avgWait/2022-07-19 13:15:52
 	
 Date Format: yyyy-MM-dd HH:mm:ss
+
+### Known Issues: None
+
+### Release Notes can be found here -- here -- https://drive.google.com/drive/folders/1DEUbaL4RbSrNXE8-ZDhAsHAqT-we1G-q

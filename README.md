@@ -7,7 +7,7 @@ The aim of this application is to submit jobs to the queue and then effectively 
 2. run the jar using this command : java -jar <jar_name>
 
 
-## The following functionalities(endpoints) are provided:
+## Functionalities(endpoints):
 
 ###### 1. Adding a job to the queue (enqueue)
 

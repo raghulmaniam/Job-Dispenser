@@ -34,6 +34,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	int totalWaitingTime, totalWorkOrders, averageWaitingTime;
 	long topNormalQueueRank, topPriorityQueueRank, topVipQueueRank = 0;
 	WorkOrder managementWorkOrder, normalQueueWorkOrder, prioriyQueueWorkOrder, vipQueueWorkOrder;
+	Boolean hasRemoved;
 
 	public String deQueueWorkOrder(Date Currdate) throws Exception {
 
@@ -74,6 +75,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 			}
 
+			// storing the ID's in four different queues instead of storing them in a single
+			// priority queue
+
 			// optimal approach - comparing only the top items of all the queues rather than
 			// recomputing the rank for all the items.
 
@@ -98,6 +102,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// reset
 		if (!workOrderIdList.isEmpty())
 			workOrderIdList.clear();
+
+		// building the ID list on demand
 
 		// building the management queue first
 		for (WorkOrder order : managementQueue) {
@@ -146,7 +152,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	public String removeWorkOrderbyId(long id) throws Exception {
+
 		WorkOrderType type = WorkOrderUtilities.computeWorkOrderType(id);
+
+		// removing the ID only from the respective queue. This improves the search time
+		// rather than scanning the entire single queue
 
 		switch (type) {
 		case NORMAL: {
@@ -173,7 +183,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	private String removeItemFromQueue(Queue<WorkOrder> queue, long id) {
 
-		Boolean hasRemoved = false;
+		hasRemoved = false;
 
 		for (WorkOrder order : queue) {
 			if (order.getRequestorId() == id) {
